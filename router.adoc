@@ -16,8 +16,7 @@ In this lab we will setup the Router and use a Route to expose the internal rout
 
 
 [[creating-the-router]]
-Creating the Router
-~~~~~~~~~~~~~~~~~~~~~
+### Creating the Router
 
 `oadm` again comes to our rescue with a handy installer for the
 registry. Run the following:
@@ -120,8 +119,7 @@ is available.
 
 
 [[further-info]]
-Further info
-~~~~~~~~~~~~~~~~~~~~~
+### Further info
 Apart from a "HAProxy" implementation OpenShift also supports other implementations.
 For example integrating with an external (existing) "F5 BigIP" or create your own.
 

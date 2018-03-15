@@ -1,6 +1,5 @@
 [[regions-and-zones]]
-Regions and Zones
------------------
+## Regions and Zones
 
 If you think you're about to learn how to configure regions and zones in
 OpenShift 3, you're only partially correct.
@@ -28,8 +27,7 @@ First, we need to talk about the "scheduler" and its default
 configuration.
 
 [[scheduler-and-defaults]]
-Scheduler and Defaults
-~~~~~~~~~~~~~~~~~~~~~~
+### Scheduler and Defaults
 
 The "scheduler" is essentially the OpenShift master. Any time a pod
 needs to be created (instantiated) somewhere, the master needs to figure
@@ -95,8 +93,7 @@ one of the important predicates (filters) before we move on to "regions"
 and "zones".
 
 [[the-nodeselector]]
-The NodeSelector
-~~~~~~~~~~~~~~~~
+### The NodeSelector
 
 `NodeSelector` is a part of the Pod data model. And, if we think back to
 our pod definition, there was a "label", which is just a key:value pair.
@@ -115,8 +112,7 @@ How can we make this more intelligent? We'll finally use "regions" and
 "zones".
 
 [[examining-the-scheduler-configuration]]
-Examining the Scheduler Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Examining the Scheduler Configuration
 
 The installer is configured to understand "regions" and "zones" as a
 matter of convenience. However, for the master (scheduler) to actually
@@ -189,8 +185,7 @@ The documentation link has some more complicated examples. The
 topoligical possibilities are endless!
 
 [[node-labels]]
-Node Labels
-~~~~~~~~~~~
+### Node Labels
 
 The assignments of "regions" and "zones" at the node-level are handled
 by labels on the nodes. Since the installation process configured the
@@ -206,7 +201,7 @@ oc label node/ose3-node2.example.com region=primary zone=west
 You can look at how the labels were implemented by doing:
 
 ....
-oc get nodes
+oc get nodes --show-labels |grep region=
 
 NAME                      LABELS                                                                     STATUS                     AGE
 ose3-master.example.com   kubernetes.io/hostname=ose3-master.example.com,region=infra,zone=default   Ready,SchedulingDisabled   48m
@@ -222,8 +217,7 @@ the master's node to receive workload (SchedulingDisabled). You will fix
 this in a moment.
 
 [[edit-default-nodeselector]]
-Edit Default NodeSelector
-~~~~~~~~~~~~~~~~~~~~~~~~~
+### Edit Default NodeSelector
 
 We want our apps to land in the primary region, and not in the infra
 region. We can do this by setting a default `nodeSelector` for our
@@ -243,8 +237,7 @@ systemctl restart atomic-openshift-master
 ....
 
 [[make-master-schedulable]]
-Make Master Schedulable
-~~~~~~~~~~~~~~~~~~~~~~~
+### Make Master Schedulable
 
 A single command can be used to make the master node schedulable:
 
@@ -268,8 +261,7 @@ ose3-node2.example.com    kubernetes.io/hostname=ose3-node2.example.com,region=p
 ....
 
 [[tweak-default-project]]
-Tweak Default Project
-~~~~~~~~~~~~~~~~~~~~~
+### Tweak Default Project
 
 The _default_ project/namespace is a special one where we will put some
 of our infrastructure-related resources. This project was created when
@@ -286,7 +278,7 @@ region.
 Execute the following:
 
 ....
-oc edit namespace default
+oc edit namespace explore-XX
 ....
 
 In the annotations list, add this line:

@@ -1,23 +1,4 @@
 == Lab: Registry and Storage
-*Table of Contents* _generated with
-https://github.com/thlorenz/doctoc[DocToc]_
-
-* link:#preparing-for-s2i-the-registry[Preparing for S2I: the Registry]
-* link:#storage-for-the-registry[Storage for the registry]
-** link:#export-an-nfs-volume[Export an NFS Volume]
-** link:#nfs-firewall[NFS Firewall]
-** link:#allow-nfs-access-in-selinux-policy[Allow NFS Access in SELinux
-Policy]
-* link:#creating-the-registry[Creating the registry]
-* link:#attaching-registry-storage[Attaching Registry Storage]
-** link:#create-a-persistentvolume[Create a PersistentVolume]
-** link:#claim-the-persistentvolume[Claim the PersistentVolume]
-** link:#attach-the-volume-to-the-registry[Attach the Volume to the
-Registry]
-
-[[preparing-for-s2i-the-registry]]
-Preparing for S2I: the Registry
--------------------------------
 
 One of the really interesting things about OpenShift v3 is that it will
 build Docker images from your source code, deploy them, and manage their
@@ -26,8 +7,7 @@ administrators may run inside the OpenShift environment that will manage
 images "locally". Let's take a moment to set that up.
 
 [[storage-for-the-registry]]
-Storage for the registry
-~~~~~~~~~~~~~~~~~~~~~~~~
+### Storage for the registry
 
 The registry stores Docker images and metadata. If you simply deploy a
 pod with the registry, it will use an ephemeral volume that is destroyed
@@ -40,8 +20,7 @@ objects, and claims on those volumes, called `PersistentVolumeClaims`.
 First, we will prepare our master to provide NFS storage.
 
 [[export-an-nfs-volume]]
-Export an NFS Volume
-^^^^^^^^^^^^^^^^^^^^
+#### Export an NFS Volume
 
 For the purposes of this training, we will just demonstrate the master
 exporting an NFS volume for use as storage by the database. *You would
@@ -86,8 +65,7 @@ the container cannot modify the permissions of the actual volume
 directory when mounted.
 
 [[nfs-firewall]]
-NFS Firewall
-^^^^^^^^^^^^
+#### NFS Firewall
 
 We will need to open ports on the firewall on the master to enable the
 nodes to communicate with us over NFS. First, let's add rules for NFS to
@@ -147,8 +125,7 @@ systemctl restart nfs
 ....
 
 [[allow-nfs-access-in-selinux-policy]]
-Allow NFS Access in SELinux Policy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#### Allow NFS Access in SELinux Policy
 
 By default policy, containers are not allowed to write to NFS mounted
 directories. We want to do just that with our database, so enable that
@@ -161,8 +138,7 @@ setsebool -P virt_use_nfs=true
 _Note:_ This command may take a while to return. Be patient.
 
 [[creating-the-registry]]
-Creating the registry
-~~~~~~~~~~~~~~~~~~~~~
+### Creating the registry
 
 `oadm` again comes to our rescue with a handy installer for the
 registry. Run the following:
@@ -275,15 +251,13 @@ Once there is an endpoint listed, the curl should work and the registry
 is available. *BUT* we still do not have any storage attached.
 
 [[attaching-registry-storage]]
-Attaching Registry Storage
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+### Attaching Registry Storage
 
 We've gone through the work of preparing to use external storage, and
 now we will actually attach some to our registry.
 
 [[create-a-persistentvolume]]
-Create a PersistentVolume
-^^^^^^^^^^^^^^^^^^^^^^^^^
+#### Create a PersistentVolume
 
 It is the PaaS administrator's responsibility to define the storage that
 is available to users. Storage is represented by a `PersistentVolume`
@@ -357,8 +331,7 @@ Source:
 ....
 
 [[claim-the-persistentvolume]]
-Claim the PersistentVolume
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+#### Claim the PersistentVolume
 
 Users "receive" volumes by making claims. Claims are handed out on a
 first-come-first-served basis. Now that the administrator has provided a
@@ -433,8 +406,7 @@ provisioning. In addition, other storage vendors are working with Red
 Hat to enable dynamic provisioning.
 
 [[attach-the-volume-to-the-registry]]
-Attach the Volume to the Registry
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#### Attach the Volume to the Registry
 
 Now that the _default_ project has a claim on a volume, we can attach it
 to the registry. Fortunately, we are provided with a handy tool,

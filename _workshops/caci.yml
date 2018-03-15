@@ -4,7 +4,7 @@ name: CACI
 revision: ocp_3_7
 
 content:
-  url: https://raw.githubusercontent.com/openshift-labs/starter-guides/master
+  url: https://raw.githubusercontent.com/hoolia/starter-guides/master
 
 vars:
   ENVIRONMENT: "Amazon Web Services"
@@ -48,6 +48,8 @@ modules:
   - install
   - explore
   - permissions
+  - parksmap-architecture
+  - docker
   - quotas
   - scaling
   - node-selector

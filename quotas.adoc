@@ -12,24 +12,24 @@ Resource limits is another way to control consumption of resources within the
 project by setting hard limits on how much compute resources a single Pod or
 Container can consume.
 
-We have defined in project `Smoke Test` some quota and resource limits.
+We have defined in your project some quota and resource limits.
 
 image::quota-1.png[ResourceQuota]
 
 #### Exercise: Hit the Limits!
 
-Since we have defined some quota and limits in our `Smoke Test` project, let's switch to it and experiment:
+Since we have defined some quota and limits in our project, let's experiment:
 
 [source]
 ----
-$ oc project smoke
+$ oc project explore-XX
 ----
 
 Let's scale our application up and see what happens. Run the following to create more pods for the application:
 
 [source]
 ----
-$ oc scale dc/smoke --replicas=2
+$ oc scale dc/parksmap --replicas=2
 ----
 
 image::quota-2.png[ResourceQuota]
@@ -40,7 +40,7 @@ Let's scale our application beyond those limits and see what happens. Run the fo
 
 [source]
 ----
-$ oc scale dc/smoke --replicas=6
+$ oc scale dc/parksmap --replicas=6
 ----
 
 OpenShift starts creating new pods and after a short while 5 pods will be created
