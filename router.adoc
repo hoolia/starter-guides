@@ -1,0 +1,132 @@
+== Lab: Router
+
+One of the key components of the OpenShift Container Platform is the "Router".
+The "Router" is basically a reverse proxy (haproxy) sitting in front of your application, 
+just like you know this from the traditional world where this would be deployed in a DMZ.
+This time we are deploying the reverse proxy "Router" in the _default_ project.
+As you know this is a special project that is used by OpenShift itself to host some of its built-in components.
+
+The "Router" routes incoming http traffic based on its TLS SNI or HTTP Host Header and forwards it to your application container.
+The "Router" consumes OpenShift "Route" objects and transforms them into haproxy configuration.
+The "Route" object contains the _host header_ (domainname), _path_ it accepts traffic for and _service name_ to forward the traffic to.
+You can also include SSL Certificates in it for SSL Offloading.
+
+In this lab we will setup the Router and use a Route to expose the internal router to the outside world.  
+
+
+
+[[creating-the-router]]
+Creating the Router
+~~~~~~~~~~~~~~~~~~~~~
+
+`oadm` again comes to our rescue with a handy installer for the
+registry. Run the following:
+
+....
+oadm router --create \
+--credentials=/etc/origin/master/openshift-registry.kubeconfig \
+--images='openshift/origin-haproxy-router:v3.7.0' \
+--replicas=1 \
+--selector='region=infra' \
+--subdomain='apps.openshift.eu' \
+-o yaml |oc create -f -
+....
+
+You'll get output like:
+
+....
+DeploymentConfig "router" created
+Service "router" created
+....
+
+You can use `oc get pods`, `oc get services`, and
+`oc get deploymentconfig` to see what happened. This would also be a
+good time to try out `oc status` as root:
+
+....
+oc status
+In project default on server https://ose-master01.openshift.eu:8443
+
+svc/router - 172.30.175.206:80
+  dc/router deploys registry.access.redhat.com/openshift3/ose-haproxy-router:v3.1.0.2 
+    #1 deployed 25 minutes ago - 1 pod
+
+To see more, use 'oc describe <resource>/<name>'.
+You can use 'oc get all' to see a list of other objects.
+....
+
+To see more information about a `Service` or `DeploymentConfig`, use
+`oc describe service <name>` or `oc describe dc <name>`. You can use
+`oc get all` to see lists of each of the types described above.
+
+Anyway, you will ultimately have a reverse proxy "Router" that is being hosted
+by OpenShift and that is running on the infra nodes (because we edited the
+default project to use this region).
+
+To quickly test your Router, you can do the following:
+
+....
+curl -v $(oc get service router --template '{{.spec.portalIP}}:{{index .spec.ports 0 "port"}}/healthz')
+curl -v http://172.30.20.139/healthz
+....
+
+You'll see something like the following:
+
+....
+* About to connect() to 172.30.20.139 port 80(#0)
+*   Trying 172.30.20.139...
+* Connected to 172.30.20.139 (172.30.20.139) port 80 (#0)
+> GET /healthz HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: 172.30.20.139:80
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Content-Type: application/json; charset=utf-8
+< Docker-Distribution-Api-Version: registry/2.0
+< Date: Wed, 11 Nov 2015 00:50:30 GMT
+< Content-Length: 3
+< 
+{}
+* Connection #0 to host 172.30.20.139 left intact
+....
+
+If you get "connection reset by peer" you may have to wait a few more
+moments after the pod is running for the service proxy to update the
+endpoints necessary to fulfill your request. You can check if your
+service has finished updating its endpoints with:
+
+....
+oc describe service router
+....
+
+And you will eventually see something like:
+
+....
+Name:                   router
+Labels:                 router=default
+Selector:               router=default
+Type:                   ClusterIP
+IP:                     172.30.239.41
+Port:                   <unnamed>       80/TCP
+Endpoints:              <unnamed>       10.1.0.4:8080
+Session Affinity:       None
+No events.
+....
+
+Once there is an endpoint listed, the curl should work and the router
+is available. 
+
+
+
+[[further-info]]
+Further info
+~~~~~~~~~~~~~~~~~~~~~
+Apart from a "HAProxy" implementation OpenShift also supports other implementations.
+For example integrating with an external (existing) "F5 BigIP" or create your own.
+
+You can find out more about Routers on OpenShift here:
+....
+https://docs.openshift.org/latest/install_config/router/index.html
+....
+
