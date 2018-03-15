@@ -260,3 +260,9 @@ modules:
     name: Binary Builds for Day to Day Development
   debugging:
     name: Using Port-Forwarding and Remote Debugging
+  node-selector:
+    name: Scheduling
+  router:
+    name: The Router
+  registry:
+    name: Docker-Registry
