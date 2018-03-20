@@ -266,3 +266,51 @@ modules:
     name: The Router
   registry:
     name: Docker-Registry
+  installation:
+    name: Cluster Installation and Verification
+  cns-deploy:
+    name: Deploying Container Native Storage
+    requires:
+      - installation
+    vars:
+      NODE_BRICK_DEVICE: "/dev/xvdd"
+      CNS_NAMESPACE: "container-native-storage"
+      HEKETI_ADMIN_PW: "myS3cr3tpassw0rd"
+      HEKETI_ADMIN_PW_BASE64: "bXlTM2NyM3RwYXNzdzByZA=="
+      HEKETI_USER_PW: "mys3rs3cr3tpassw0rd"
+      CNS_STORAGECLASS: "cns-gold"
+  app-mgmt-basics:
+    name: Application Management Basics
+    requires:
+      - installation
+  cluster-mgmt-basics:
+    name: Cluster Management Basics
+    requires:
+      - installation
+  ldap-groupsync:
+    name: Using External Authentication Providers (LDAP)
+  template-quota-limits:
+    name: Project Template, Quota, and Limits
+    requires:
+      - installation
+  infra-mgmt-basics:
+    name: Infrastructure Management Basics
+    requires:
+      - installation
+      - cns-deploy
+    vars:
+      CNS_NAMESPACE: "container-native-storage"
+      CNS_STORAGECLASS: "cns-gold"
+  cns-management:
+    name: Container-native Storage Management
+    requires:
+      - installation
+      - cns-deploy
+      - infra-mgmt-basics
+    vars:
+      HEKETI_ADMIN_PW: "myS3cr3tpassw0rd"
+      CNS_STORAGECLASS: "cns-gold"
+      CNS_STORAGECLASS2: "cns-silver"
+      CNS_NAMESPACE: "container-native-storage"
+      NODE_BRICK_DEVICE: "/dev/xvdd"
+      NODE_BRICK_DEVICE2: "/dev/xvde" 
